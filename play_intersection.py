@@ -6,37 +6,66 @@ from agents import Car, RectangleBuilding, Pedestrian, Painting, SpeedMeter, Dis
 from geometry import Point
 import time
 
-
 demo_name = input("Enter speed_distance_iter: ")
 
 h_goal_y = 110.
 
 # other car
-a_vel_x = 0.
-a_vel_y = 0.1
+a_vel_x = -0.1
+a_vel_y = 0.
 
 # BUILD WORLD -----------------------------------------------------------------------------------------------------
 
 dt = 0.1  # time steps in terms of seconds. In other words, 1/dt is the FPS.
 w = World(dt, width=120, height=120, ppm=6)  # The world is 120 meters by 120 meters. ppm is the pixels per meter.
 
-# Let's add some sidewalks and RectangleBuildin.gs.
+# Let's add some sidewalks and RectangleBuildings.
 # A Painting object is a rectangle that the vehicles cannot collide with. So we use them for the sidewalks.
 # A RectangleBuilding object is also static. But as opposed to Painting, it can be collided with.
 # For both of these objects, we give the center point and the size.
-w.add(Painting(Point(103.5, 60), Point(35, 120), 'gray80'))  # We build a sidewalk.
-w.add(RectangleBuilding(Point(104.5, 60), Point(32.5, 120)))  # The RectangleBuilding is then on top of the sidewalk.
+w.add(Painting(Point(93.5, 106.5), Point(55, 27), 'gray80'))  # We build a sidewalk.
+w.add(RectangleBuilding(Point(94.5, 107.5),
+                        Point(52.5, 25)))  # The RectangleBuilding is then on top of the sidewalk.
 
-# Let's repeat this for a different RectangleBuilding.
-w.add(Painting(Point(37.5, 60), Point(75, 120), 'gray80'))
-w.add(RectangleBuilding(Point(36.5, 60), Point(72.5, 120)))
+# Let's repeat this for 4 different RectangleBuildings.
+w.add(Painting(Point(27.5, 106.5), Point(55, 27), 'gray80'))
+w.add(RectangleBuilding(Point(26.5, 107.5), Point(52.5, 25)))
+
+w.add(Painting(Point(93.5, 41), Point(55, 82), 'gray80'))
+w.add(RectangleBuilding(Point(94.5, 40), Point(52.5, 80)))
+
+w.add(Painting(Point(27.5, 41), Point(55, 82), 'gray80'))
+w.add(RectangleBuilding(Point(26.5, 40), Point(52.5, 80)))
+
+# Let's also add some zebra crossings, because why not.
+w.add(Painting(Point(56, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(57, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(58, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(59, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(60, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(61, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(62, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(63, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(64, 81), Point(0.5, 2), 'white'))
+w.add(Painting(Point(65, 81), Point(0.5, 2), 'white'))
+
+w.add(Painting(Point(67, 83), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 84), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 85), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 86), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 87), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 88), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 89), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 90), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 91), Point(2, 0.5), 'white'))
+w.add(Painting(Point(67, 92), Point(2, 0.5), 'white'))
 
 # A Car object is a dynamic object -- it can move. We construct it using its center location and heading angle.
-c1 = Car(Point(80, 20), np.pi/2, 'red')
+c1 = Car(Point(64, 35), np.pi / 2, 'red')
 # c1.velocity = Point(h_vel_x, h_vel_y)  # We can also specify an initial velocity just like this.
 w.add(c1)
 
-c2 = Car(Point(80, 70), np.pi/2, 'blue')
+c2 = Car(Point(82, 90), np.pi, 'blue')
 # c2.velocity = Point(a_vel_x, a_vel_y)  # We can also specify an initial velocity just like this.
 w.add(c2)
 
@@ -49,7 +78,7 @@ init_speed = 0
 sm = SpeedMeter(Point(25, 100), np.pi/2, 'Speed: ' + str(init_speed), 'green')
 w.add(sm)
 
-init_distance = c1.distanceTo(c2)
+init_distance = np.round(c1.distanceTo(c2))
 dm = DistanceMeter(Point(26, 85), np.pi/2, 'Distance: ' + str(init_distance), 'red')
 w.add(dm)
 
@@ -82,7 +111,7 @@ while c1.center.y < h_goal_y:
 
         for agent in w.agents:
             if isinstance(agent, SpeedMeter):
-                agent.text = "Speed: " + str(np.round(h_vel*20))
+                agent.text = "Speed: " + str(np.round(h_vel * 20))
             if isinstance(agent, DistanceMeter):
                 agent.text = "Distance: " + str(np.round(c1.distanceTo(c2)))
 
@@ -93,10 +122,13 @@ while c1.center.y < h_goal_y:
     time.sleep(dt/4)  # Let's watch it 4x
     if w.collision_exists():
         import sys
+
         sys.exit(0)
+
+    demo.append([c1.center.x, c1.center.y, c2.center.x, c2.center.y])
 
 w.close()
 
-pickle.dump(demo, open("demos/highway" + demo_name + ".pkl", "wb"))
+pickle.dump(demo, open("demos/intersection" + demo_name + ".pkl", "wb"))
 
 print("Done.")
