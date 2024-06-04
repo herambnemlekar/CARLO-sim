@@ -3,12 +3,13 @@ from entities import Entity
 from typing import Union
 from visualizer import Visualizer
 
+
 class World:
     def __init__(self, dt: float, width: float, height: float, ppm: float = 8):
         self.dynamic_agents = []
         self.static_agents = []
-        self.t = 0 # simulation time
-        self.dt = dt # simulation time step
+        self.t = 0  # simulation time
+        self.dt = dt  # simulation time step
         self.visualizer = Visualizer(width, height, ppm=ppm)
         
     def add(self, entity: Entity):
@@ -23,7 +24,7 @@ class World:
         self.t += self.dt
     
     def render(self):
-        self.visualizer.create_window(bg_color = 'gray')
+        self.visualizer.create_window(bg_color='gray')
         self.visualizer.update_agents(self.agents)
         
     @property

@@ -1,5 +1,6 @@
 from graphics import *
-from entities import RectangleEntity, CircleEntity, RingEntity
+from entities import RectangleEntity, CircleEntity, RingEntity, TextEntity
+
 
 class Visualizer:
     def __init__(self, width: float, height: float, ppm: int):
@@ -11,8 +12,7 @@ class Visualizer:
         self.display_width, self.display_height = int(width*ppm), int(height*ppm)
         self.window_created = False
         self.visualized_imgs = []
-        
-        
+
     def create_window(self, bg_color: str = 'gray80'):
         if not self.window_created or self.win.isClosed():
             self.win = GraphWin('CARLO', self.display_width, self.display_height)
@@ -25,14 +25,14 @@ class Visualizer:
         
         # Remove the movable agents from the window
         for imgItem in self.visualized_imgs:
-            if imgItem['movable']:
+            if imgItem['movable'] or isinstance(imgItem['graphics'], Text):
                 imgItem['graphics'].undraw()
             else:
                 new_visualized_imgs.append({'movable': False, 'graphics': imgItem['graphics']})
                 
         # Add the updated movable agents (and the unmovable ones if they were not rendered before)
         for agent in agents:
-            if agent.movable or not self.visualized_imgs:
+            if agent.movable or isinstance(agent, TextEntity) or not self.visualized_imgs:
                 if isinstance(agent, RectangleEntity):
                     C = [self.ppm*c for c in agent.corners]
                     img = Polygon([Point(c.x, self.display_height-c.y) for c in C])
@@ -40,6 +40,8 @@ class Visualizer:
                     img = Circle(Point(self.ppm*agent.center.x, self.display_height - self.ppm*agent.center.y), self.ppm*agent.radius)
                 elif isinstance(agent, RingEntity):
                     img = CircleRing(Point(self.ppm*agent.center.x, self.display_height - self.ppm*agent.center.y), self.ppm*agent.inner_radius, self.ppm*agent.outer_radius)
+                elif isinstance(agent, TextEntity):
+                    img = Text(Point(self.ppm*agent.center.x, self.display_height - self.ppm*agent.center.y), agent.text)
                 else:
                     raise NotImplementedError
                 img.setFill(agent.color)
