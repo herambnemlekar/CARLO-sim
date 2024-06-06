@@ -49,7 +49,7 @@ init_speed = 0
 sm = SpeedMeter(Point(25, 100), np.pi/2, 'Speed: ' + str(init_speed), 'green')
 w.add(sm)
 
-init_distance = c1.distanceTo(c2)
+init_distance = np.round(c1.distanceTo(c2))
 dm = DistanceMeter(Point(26, 85), np.pi/2, 'Distance: ' + str(init_distance), 'red')
 w.add(dm)
 
@@ -77,14 +77,15 @@ while c1.center.y < h_goal_y:
         c2.center.x += a_vel_x
         c2.center.y += a_vel_y
 
-        h_vel = controller.throttle*6.0
-        c1.set_control(controller.steering/2.0, h_vel)
+        c1.set_control(controller.steering/2.0, controller.throttle*5.0)
 
         for agent in w.agents:
             if isinstance(agent, SpeedMeter):
-                agent.text = "Speed: " + str(np.round(h_vel*20))
+                speed = np.round(controller.throttle*100)
+                agent.text = "Speed: " + str(speed)
             if isinstance(agent, DistanceMeter):
-                agent.text = "Distance: " + str(np.round(c1.distanceTo(c2)))
+                distance = np.round(c1.distanceTo(c2))
+                agent.text = "Distance: " + str(distance)
 
         demo.append([c1.center.x, c1.center.y, c2.center.x, c2.center.y])
 

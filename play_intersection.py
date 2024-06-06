@@ -61,11 +61,11 @@ w.add(Painting(Point(67, 91), Point(2, 0.5), 'white'))
 w.add(Painting(Point(67, 92), Point(2, 0.5), 'white'))
 
 # A Car object is a dynamic object -- it can move. We construct it using its center location and heading angle.
-c1 = Car(Point(64, 35), np.pi / 2, 'red')
+c1 = Car(Point(60, 35), np.pi / 2, 'red')
 # c1.velocity = Point(h_vel_x, h_vel_y)  # We can also specify an initial velocity just like this.
 w.add(c1)
 
-c2 = Car(Point(82, 90), np.pi, 'blue')
+c2 = Car(Point(80, 90), np.pi, 'blue')
 # c2.velocity = Point(a_vel_x, a_vel_y)  # We can also specify an initial velocity just like this.
 w.add(c2)
 
@@ -106,14 +106,15 @@ while c1.center.y < h_goal_y:
         c2.center.x += a_vel_x
         c2.center.y += a_vel_y
 
-        h_vel = controller.throttle*6.0
-        c1.set_control(controller.steering/2.0, h_vel)
+        c1.set_control(controller.steering / 2.0, controller.throttle * 5.0)
 
         for agent in w.agents:
             if isinstance(agent, SpeedMeter):
-                agent.text = "Speed: " + str(np.round(h_vel * 20))
+                speed = np.round(controller.throttle * 100)
+                agent.text = "Speed: " + str(speed)
             if isinstance(agent, DistanceMeter):
-                agent.text = "Distance: " + str(np.round(c1.distanceTo(c2)))
+                distance = np.round(c1.distanceTo(c2))
+                agent.text = "Distance: " + str(distance)
 
         demo.append([c1.center.x, c1.center.y, c2.center.x, c2.center.y])
 
